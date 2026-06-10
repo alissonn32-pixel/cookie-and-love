@@ -4,6 +4,8 @@ import { useState } from "react";
 import { CartItem, DeliveryType, OrderDetails, PaymentMethod, StoreSettings } from "@/lib/types";
 import { buildOrderMessage, buildWhatsAppLink } from "@/lib/whatsapp";
 import { isStoreOpen, meetsMinimumOrder, minimumOrderShortfall } from "@/lib/validation";
+import { createSupabaseClient } from "@/lib/supabase";
+import { saveOrder } from "@/lib/orders";
 
 const PAYMENT_LABELS: Record<PaymentMethod, string> = {
   pix: "Pix",
@@ -41,7 +43,7 @@ export function CheckoutModal({
   const canSubmit =
     storeOpen && minimumMet && customerName.trim() !== "" && whatsapp.trim() !== "" && pickupTime.trim() !== "";
 
-  function handleSubmit() {
+  async function handleSubmit() {
     const order: OrderDetails = {
       customerName,
       whatsapp,
@@ -50,6 +52,14 @@ export function CheckoutModal({
       paymentMethod,
       notes: notes.trim() === "" ? undefined : notes.trim(),
     };
+
+    try {
+      const client = createSupabaseClient();
+      await saveOrder(client, cart, order, total);
+    } catch (error) {
+      console.error("Failed to save order:", error);
+    }
+
     const message = buildOrderMessage(cart, order, total);
     const link = buildWhatsAppLink(settings.whatsappTarget, message);
     window.open(link, "_blank");
