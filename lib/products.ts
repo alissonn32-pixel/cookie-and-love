@@ -1,70 +1,42 @@
-import { Product } from "./types";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { Product, ProductCategory, ProductBadge } from "./types";
 
-export const products: Product[] = [
-  {
-    id: "big-apple-choc-chunk",
-    name: "Big Apple Choc Chunk",
-    description: "Massa amanteigada com gotas de chocolate belga",
-    price: 12.9,
-    imageUrl: "/products/big-apple-choc-chunk.jpg",
-    category: "destaque",
-    badge: "mais_vendido",
-    stockToday: null,
-    active: true,
-  },
-  {
-    id: "brooklyn-red-velvet",
-    name: "Brooklyn Red Velvet",
-    description: "Cookie red velvet com recheio de cream cheese",
-    price: 13.9,
-    imageUrl: "/products/brooklyn-red-velvet.jpg",
-    category: "destaque",
-    badge: "novo",
-    stockToday: null,
-    active: true,
-  },
-  {
-    id: "central-park-oatmeal",
-    name: "Central Park Oatmeal",
-    description: "Aveia, canela e passas, textura macia",
-    price: 11.9,
-    imageUrl: "/products/central-park-oatmeal.jpg",
-    category: "cookie",
-    badge: null,
-    stockToday: null,
-    active: true,
-  },
-  {
-    id: "harlem-peanut-butter",
-    name: "Harlem Peanut Butter",
-    description: "Pasta de amendoim com gotas de chocolate ao leite",
-    price: 13.5,
-    imageUrl: "/products/harlem-peanut-butter.jpg",
-    category: "cookie",
-    badge: null,
-    stockToday: 0,
-    active: true,
-  },
-  {
-    id: "soho-triple-chocolate",
-    name: "SoHo Triple Chocolate",
-    description: "Massa de cacau com três tipos de chocolate",
-    price: 14.9,
-    imageUrl: "/products/soho-triple-chocolate.jpg",
-    category: "especial",
-    badge: "mais_vendido",
-    stockToday: 5,
-    active: true,
-  },
-  {
-    id: "tribeca-salted-caramel",
-    name: "Tribeca Salted Caramel",
-    description: "Recheio de doce de leite com flor de sal",
-    price: 15.9,
-    imageUrl: "/products/tribeca-salted-caramel.jpg",
-    category: "especial",
-    badge: "novo",
-    stockToday: null,
-    active: true,
-  },
-];
+interface ProductRow {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image_url: string;
+  category: ProductCategory;
+  badge: ProductBadge;
+  stock_today: number | null;
+  active: boolean;
+}
+
+function mapRow(row: ProductRow): Product {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description,
+    price: row.price,
+    imageUrl: row.image_url,
+    category: row.category,
+    badge: row.badge,
+    stockToday: row.stock_today,
+    active: row.active,
+  };
+}
+
+export async function getProducts(client: SupabaseClient): Promise<Product[]> {
+  const { data, error } = await client
+    .from("products")
+    .select("*")
+    .eq("active", true)
+    .order("category");
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data as ProductRow[]).map(mapRow);
+}
