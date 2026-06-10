@@ -47,3 +47,23 @@ export interface StoreSettings {
   deliveryOptions: DeliveryType[];
   tabs: TabConfig[];
 }
+
+export interface OrderItem {
+  productId: string;
+  name: string;
+  qty: number;
+  price: number;
+}
+
+export interface Order {
+  id: string;
+  customerName: string;
+  whatsapp: string;
+  pickupTime: string;
+  deliveryType: DeliveryType;
+  paymentMethod: PaymentMethod;
+  notes: string | null;
+  items: OrderItem[];
+  total: number;
+  createdAt: string;
+}
