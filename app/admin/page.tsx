@@ -15,9 +15,12 @@ export default async function AdminDashboard() {
         <LogoutButton />
       </div>
       <p className="text-sm text-taupe mb-6">Logado como {user?.email}</p>
-      <nav>
-        <Link href="/admin/products" className="text-sm underline text-brown">
+      <nav className="space-y-2">
+        <Link href="/admin/products" className="block text-sm underline text-brown">
           Gerenciar produtos
+        </Link>
+        <Link href="/admin/orders" className="block text-sm underline text-brown">
+          Ver pedidos
         </Link>
       </nav>
     </main>
