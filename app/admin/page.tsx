@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/admin/LogoutButton";
 
@@ -13,7 +14,12 @@ export default async function AdminDashboard() {
         <h1 className="font-display font-bold text-xl">Painel administrativo</h1>
         <LogoutButton />
       </div>
-      <p className="text-sm text-taupe">Logado como {user?.email}</p>
+      <p className="text-sm text-taupe mb-6">Logado como {user?.email}</p>
+      <nav>
+        <Link href="/admin/products" className="text-sm underline text-brown">
+          Gerenciar produtos
+        </Link>
+      </nav>
     </main>
   );
 }
