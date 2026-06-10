@@ -41,6 +41,10 @@ function toRow(product: Product): ProductRow {
   };
 }
 
+export function getFeaturedProducts(products: Product[]): Product[] {
+  return products.filter((p) => p.active && p.badge === "mais_vendido");
+}
+
 export async function getProducts(client: SupabaseClient): Promise<Product[]> {
   const { data, error } = await client
     .from("products")

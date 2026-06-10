@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { getProducts, getAllProducts, getProductById, createProduct, updateProduct, deleteProduct } from "./products";
+import { getProducts, getAllProducts, getProductById, createProduct, updateProduct, deleteProduct, getFeaturedProducts } from "./products";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { Product } from "./types";
 
@@ -272,5 +272,65 @@ describe("deleteProduct", () => {
     const client = { from } as unknown as SupabaseClient;
 
     await expect(deleteProduct(client, "test-cookie")).rejects.toThrow("db error");
+  });
+});
+
+describe("getFeaturedProducts", () => {
+  it("returns only active products with badge 'mais_vendido'", () => {
+    const products: Product[] = [
+      {
+        id: "a",
+        name: "A",
+        description: "A desc",
+        price: 10,
+        imageUrl: "/products/a.jpg",
+        category: "destaque",
+        badge: "mais_vendido",
+        stockToday: null,
+        active: true,
+      },
+      {
+        id: "b",
+        name: "B",
+        description: "B desc",
+        price: 11,
+        imageUrl: "/products/b.jpg",
+        category: "cookie",
+        badge: "novo",
+        stockToday: null,
+        active: true,
+      },
+      {
+        id: "c",
+        name: "C",
+        description: "C desc",
+        price: 12,
+        imageUrl: "/products/c.jpg",
+        category: "destaque",
+        badge: "mais_vendido",
+        stockToday: null,
+        active: false,
+      },
+    ];
+
+    expect(getFeaturedProducts(products)).toEqual([products[0]]);
+  });
+
+  it("returns an empty array when no product matches", () => {
+    const products: Product[] = [
+      {
+        id: "a",
+        name: "A",
+        description: "A desc",
+        price: 10,
+        imageUrl: "/products/a.jpg",
+        category: "destaque",
+        badge: "novo",
+        stockToday: null,
+        active: true,
+      },
+    ];
+
+    expect(getFeaturedProducts(products)).toEqual([]);
   });
 });
