@@ -39,3 +39,6 @@ next-env.d.ts
 
 # Brainstorming companion (local mockups/state)
 .superpowers/
+
+# Claude Code local settings
+.claude/
