@@ -40,3 +40,23 @@ export async function getProducts(client: SupabaseClient): Promise<Product[]> {
 
   return (data as ProductRow[]).map(mapRow);
 }
+
+export async function getAllProducts(client: SupabaseClient): Promise<Product[]> {
+  const { data, error } = await client.from("products").select("*").order("category");
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return (data as ProductRow[]).map(mapRow);
+}
+
+export async function getProductById(client: SupabaseClient, id: string): Promise<Product | null> {
+  const { data, error } = await client.from("products").select("*").eq("id", id).maybeSingle();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return data ? mapRow(data as ProductRow) : null;
+}

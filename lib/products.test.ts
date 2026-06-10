@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { getProducts } from "./products";
+import { getProducts, getAllProducts, getProductById } from "./products";
 import { SupabaseClient } from "@supabase/supabase-js";
 
 function mockClient(rows: unknown[] | null, error: unknown = null) {
@@ -66,5 +66,117 @@ describe("getProducts", () => {
     const client = mockClient(null, new Error("db error"));
 
     await expect(getProducts(client)).rejects.toThrow("db error");
+  });
+});
+
+describe("getAllProducts", () => {
+  it("maps database rows to Product objects without filtering by active", async () => {
+    const rows = [
+      {
+        id: "harlem-peanut-butter",
+        name: "Harlem Peanut Butter",
+        description: "Pasta de amendoim com gotas de chocolate ao leite",
+        price: 13.5,
+        image_url: "/products/harlem-peanut-butter.jpg",
+        category: "cookie",
+        badge: null,
+        stock_today: 0,
+        active: false,
+      },
+    ];
+
+    const order = vi.fn().mockResolvedValue({ data: rows, error: null });
+    const select = vi.fn().mockReturnValue({ order });
+    const from = vi.fn().mockReturnValue({ select });
+    const client = { from } as unknown as SupabaseClient;
+
+    const products = await getAllProducts(client);
+
+    expect(from).toHaveBeenCalledWith("products");
+    expect(select).toHaveBeenCalledWith("*");
+    expect(order).toHaveBeenCalledWith("category");
+    expect(products).toEqual([
+      {
+        id: "harlem-peanut-butter",
+        name: "Harlem Peanut Butter",
+        description: "Pasta de amendoim com gotas de chocolate ao leite",
+        price: 13.5,
+        imageUrl: "/products/harlem-peanut-butter.jpg",
+        category: "cookie",
+        badge: null,
+        stockToday: 0,
+        active: false,
+      },
+    ]);
+  });
+
+  it("throws an error when the query returns an error", async () => {
+    const order = vi.fn().mockResolvedValue({ data: null, error: new Error("db error") });
+    const select = vi.fn().mockReturnValue({ order });
+    const from = vi.fn().mockReturnValue({ select });
+    const client = { from } as unknown as SupabaseClient;
+
+    await expect(getAllProducts(client)).rejects.toThrow("db error");
+  });
+});
+
+describe("getProductById", () => {
+  it("returns the mapped product when found", async () => {
+    const row = {
+      id: "tribeca-salted-caramel",
+      name: "Tribeca Salted Caramel",
+      description: "Recheio de doce de leite com flor de sal",
+      price: 15.9,
+      image_url: "/products/tribeca-salted-caramel.jpg",
+      category: "especial",
+      badge: "novo",
+      stock_today: null,
+      active: true,
+    };
+
+    const maybeSingle = vi.fn().mockResolvedValue({ data: row, error: null });
+    const eq = vi.fn().mockReturnValue({ maybeSingle });
+    const select = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ select });
+    const client = { from } as unknown as SupabaseClient;
+
+    const product = await getProductById(client, "tribeca-salted-caramel");
+
+    expect(from).toHaveBeenCalledWith("products");
+    expect(select).toHaveBeenCalledWith("*");
+    expect(eq).toHaveBeenCalledWith("id", "tribeca-salted-caramel");
+    expect(product).toEqual({
+      id: "tribeca-salted-caramel",
+      name: "Tribeca Salted Caramel",
+      description: "Recheio de doce de leite com flor de sal",
+      price: 15.9,
+      imageUrl: "/products/tribeca-salted-caramel.jpg",
+      category: "especial",
+      badge: "novo",
+      stockToday: null,
+      active: true,
+    });
+  });
+
+  it("returns null when not found", async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null });
+    const eq = vi.fn().mockReturnValue({ maybeSingle });
+    const select = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ select });
+    const client = { from } as unknown as SupabaseClient;
+
+    const product = await getProductById(client, "does-not-exist");
+
+    expect(product).toBeNull();
+  });
+
+  it("throws an error when the query returns an error", async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: new Error("db error") });
+    const eq = vi.fn().mockReturnValue({ maybeSingle });
+    const select = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ select });
+    const client = { from } as unknown as SupabaseClient;
+
+    await expect(getProductById(client, "x")).rejects.toThrow("db error");
   });
 });
