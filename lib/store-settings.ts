@@ -1,18 +1,40 @@
-import { StoreSettings } from "./types";
+import { SupabaseClient } from "@supabase/supabase-js";
+import { StoreSettings, PaymentMethod, DeliveryType, TabConfig } from "./types";
 
-export const storeSettings: StoreSettings = {
-  isOpen: true,
-  prepTimeMinutes: 40,
-  minOrderValue: 0,
-  heroText: "Crocante por fora, derretendo por dentro.",
-  whatsappTarget: "5500000000000",
-  paymentMethods: ["pix", "dinheiro", "cartao"],
-  deliveryOptions: ["retirada", "entrega"],
-  tabs: [
-    { id: "destaques", label: "Destaques" },
-    { id: "cookies", label: "Cookies" },
-    { id: "especiais", label: "Especiais da casa" },
-    { id: "avaliacoes", label: "Avaliações" },
-    { id: "informacoes", label: "Informações" },
-  ],
-};
+interface StoreSettingsRow {
+  id: number;
+  is_open: boolean;
+  prep_time_minutes: number;
+  min_order_value: number;
+  hero_text: string;
+  whatsapp_target: string;
+  payment_methods: PaymentMethod[];
+  delivery_options: DeliveryType[];
+  tabs_config: TabConfig[];
+}
+
+function mapRow(row: StoreSettingsRow): StoreSettings {
+  return {
+    isOpen: row.is_open,
+    prepTimeMinutes: row.prep_time_minutes,
+    minOrderValue: row.min_order_value,
+    heroText: row.hero_text,
+    whatsappTarget: row.whatsapp_target,
+    paymentMethods: row.payment_methods,
+    deliveryOptions: row.delivery_options,
+    tabs: row.tabs_config,
+  };
+}
+
+export async function getStoreSettings(client: SupabaseClient): Promise<StoreSettings> {
+  const { data, error } = await client
+    .from("store_settings")
+    .select("*")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return mapRow(data as StoreSettingsRow);
+}
