@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Header } from "@/components/Header";
 import { InfoBar } from "@/components/InfoBar";
+import { ProductCarousel } from "@/components/ProductCarousel";
 import { Hero } from "@/components/Hero";
 import { Tabs } from "@/components/Tabs";
 import { ProductGrid } from "@/components/ProductGrid";
@@ -10,6 +11,7 @@ import { CartBar } from "@/components/CartBar";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { useCart } from "@/hooks/useCart";
 import { Product, StoreSettings } from "@/lib/types";
+import { getFeaturedProducts } from "@/lib/products";
 
 const TAB_TO_CATEGORY: Record<string, string> = {
   destaques: "destaque",
@@ -37,6 +39,7 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
       <div className="deli-stripe" />
       <Header />
       <InfoBar settings={storeSettings} />
+      <ProductCarousel products={getFeaturedProducts(products)} />
       <Hero text={storeSettings.heroText} />
       <Tabs tabs={storeSettings.tabs} activeTab={activeTab} onChange={setActiveTab} />
 
