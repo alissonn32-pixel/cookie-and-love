@@ -29,3 +29,12 @@ body {
     var(--color-cream) 14px 28px
   );
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
