@@ -27,6 +27,20 @@ function mapRow(row: ProductRow): Product {
   };
 }
 
+function toRow(product: Product): ProductRow {
+  return {
+    id: product.id,
+    name: product.name,
+    description: product.description,
+    price: product.price,
+    image_url: product.imageUrl,
+    category: product.category,
+    badge: product.badge,
+    stock_today: product.stockToday,
+    active: product.active,
+  };
+}
+
 export async function getProducts(client: SupabaseClient): Promise<Product[]> {
   const { data, error } = await client
     .from("products")
@@ -59,4 +73,28 @@ export async function getProductById(client: SupabaseClient, id: string): Promis
   }
 
   return data ? mapRow(data as ProductRow) : null;
+}
+
+export async function createProduct(client: SupabaseClient, product: Product): Promise<void> {
+  const { error } = await client.from("products").insert(toRow(product));
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function updateProduct(client: SupabaseClient, product: Product): Promise<void> {
+  const { error } = await client.from("products").update(toRow(product)).eq("id", product.id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
+
+export async function deleteProduct(client: SupabaseClient, id: string): Promise<void> {
+  const { error } = await client.from("products").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(error.message);
+  }
 }

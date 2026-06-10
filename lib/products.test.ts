@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
-import { getProducts, getAllProducts, getProductById } from "./products";
+import { getProducts, getAllProducts, getProductById, createProduct, updateProduct, deleteProduct } from "./products";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { Product } from "./types";
 
 function mockClient(rows: unknown[] | null, error: unknown = null) {
   const order = vi.fn().mockResolvedValue({ data: rows, error });
@@ -178,5 +179,98 @@ describe("getProductById", () => {
     const client = { from } as unknown as SupabaseClient;
 
     await expect(getProductById(client, "x")).rejects.toThrow("db error");
+  });
+});
+
+const sampleProduct: Product = {
+  id: "test-cookie",
+  name: "Test Cookie",
+  description: "A test cookie",
+  price: 10,
+  imageUrl: "/products/test-cookie.jpg",
+  category: "cookie",
+  badge: null,
+  stockToday: null,
+  active: true,
+};
+
+const sampleRow = {
+  id: "test-cookie",
+  name: "Test Cookie",
+  description: "A test cookie",
+  price: 10,
+  image_url: "/products/test-cookie.jpg",
+  category: "cookie",
+  badge: null,
+  stock_today: null,
+  active: true,
+};
+
+describe("createProduct", () => {
+  it("inserts a row mapped from the product", async () => {
+    const insert = vi.fn().mockResolvedValue({ error: null });
+    const from = vi.fn().mockReturnValue({ insert });
+    const client = { from } as unknown as SupabaseClient;
+
+    await createProduct(client, sampleProduct);
+
+    expect(from).toHaveBeenCalledWith("products");
+    expect(insert).toHaveBeenCalledWith(sampleRow);
+  });
+
+  it("throws an error when the insert returns an error", async () => {
+    const insert = vi.fn().mockResolvedValue({ error: new Error("db error") });
+    const from = vi.fn().mockReturnValue({ insert });
+    const client = { from } as unknown as SupabaseClient;
+
+    await expect(createProduct(client, sampleProduct)).rejects.toThrow("db error");
+  });
+});
+
+describe("updateProduct", () => {
+  it("updates the row matching the product's id", async () => {
+    const eq = vi.fn().mockResolvedValue({ error: null });
+    const update = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ update });
+    const client = { from } as unknown as SupabaseClient;
+
+    await updateProduct(client, sampleProduct);
+
+    expect(from).toHaveBeenCalledWith("products");
+    expect(update).toHaveBeenCalledWith(sampleRow);
+    expect(eq).toHaveBeenCalledWith("id", "test-cookie");
+  });
+
+  it("throws an error when the update returns an error", async () => {
+    const eq = vi.fn().mockResolvedValue({ error: new Error("db error") });
+    const update = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ update });
+    const client = { from } as unknown as SupabaseClient;
+
+    await expect(updateProduct(client, sampleProduct)).rejects.toThrow("db error");
+  });
+});
+
+describe("deleteProduct", () => {
+  it("deletes the row matching the given id", async () => {
+    const eq = vi.fn().mockResolvedValue({ error: null });
+    const del = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ delete: del });
+    const client = { from } as unknown as SupabaseClient;
+
+    await deleteProduct(client, "test-cookie");
+
+    expect(from).toHaveBeenCalledWith("products");
+    expect(del).toHaveBeenCalled();
+    expect(eq).toHaveBeenCalledWith("id", "test-cookie");
+  });
+
+  it("throws an error when the delete returns an error", async () => {
+    const eq = vi.fn().mockResolvedValue({ error: new Error("db error") });
+    const del = vi.fn().mockReturnValue({ eq });
+    const from = vi.fn().mockReturnValue({ delete: del });
+    const client = { from } as unknown as SupabaseClient;
+
+    await expect(deleteProduct(client, "test-cookie")).rejects.toThrow("db error");
   });
 });
