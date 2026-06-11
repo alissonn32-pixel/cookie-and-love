@@ -35,7 +35,7 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
   );
 
   return (
-    <main className="max-w-md mx-auto pb-4 lg:max-w-6xl lg:pb-8">
+    <main className="max-w-md mx-auto pb-4 lg:max-w-4xl lg:pb-8">
       <div className="deli-stripe" />
       <Header />
       <InfoBar settings={storeSettings} />

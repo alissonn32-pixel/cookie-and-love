@@ -21,7 +21,7 @@ export function ProductGrid({
   }
 
   return (
-    <div className="px-6 py-5 grid grid-cols-2 gap-3.5 lg:grid-cols-4 lg:gap-5 lg:px-12">
+    <div className="px-6 py-5 grid grid-cols-2 gap-3.5 lg:grid-cols-3 lg:gap-5 lg:px-12">
       {products.map((product) => {
         const cartItem = cart.find((item) => item.productId === product.id);
         return (
