@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function Header() {
   return (
-    <header className="px-6 pt-6 pb-2">
+    <header className="px-6 pt-6 pb-2 lg:px-12">
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-3">
           <Image
