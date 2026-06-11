@@ -35,7 +35,7 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
   );
 
   return (
-    <main className="max-w-md mx-auto pb-4">
+    <main className="max-w-md mx-auto pb-4 lg:max-w-6xl lg:pb-8">
       <div className="deli-stripe" />
       <Header />
       <InfoBar settings={storeSettings} />
@@ -51,7 +51,7 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
           onRemove={remove}
         />
       ) : (
-        <div className="px-6 py-8 text-sm text-taupe">
+        <div className="px-6 py-8 text-sm text-taupe lg:px-12">
           Conteúdo desta seção em breve.
         </div>
       )}
