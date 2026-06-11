@@ -8,6 +8,7 @@ import { Hero } from "@/components/Hero";
 import { Tabs } from "@/components/Tabs";
 import { ProductGrid } from "@/components/ProductGrid";
 import { CartBar } from "@/components/CartBar";
+import { OrderSidebar } from "@/components/OrderSidebar";
 import { CheckoutModal } from "@/components/CheckoutModal";
 import { useCart } from "@/hooks/useCart";
 import { Product, StoreSettings } from "@/lib/types";
@@ -27,7 +28,7 @@ interface HomeClientProps {
 export function HomeClient({ products, storeSettings }: HomeClientProps) {
   const [activeTab, setActiveTab] = useState(storeSettings.tabs[0].id);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const { cart, total, add, remove } = useCart();
+  const { cart, total, add, remove, setQty } = useCart();
 
   const category = TAB_TO_CATEGORY[activeTab];
   const visibleProducts = products.filter(
@@ -35,26 +36,38 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
   );
 
   return (
-    <main className="max-w-md mx-auto pb-4 lg:max-w-4xl lg:pb-8">
+    <main className="max-w-md mx-auto pb-4 lg:max-w-6xl lg:pb-8">
       <div className="deli-stripe" />
-      <Header />
-      <InfoBar settings={storeSettings} />
-      <ProductCarousel products={getFeaturedProducts(products)} />
-      <Hero text={storeSettings.heroText} />
-      <Tabs tabs={storeSettings.tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-      {category ? (
-        <ProductGrid
-          products={visibleProducts}
-          cart={cart}
-          onAdd={add}
-          onRemove={remove}
-        />
-      ) : (
-        <div className="px-6 py-8 text-sm text-taupe lg:px-12">
-          Conteúdo desta seção em breve.
+      <div className="lg:flex lg:gap-8 lg:items-start">
+        <div className="lg:flex-1">
+          <Header />
+          <InfoBar settings={storeSettings} />
+          <ProductCarousel products={getFeaturedProducts(products)} />
+          <Hero text={storeSettings.heroText} />
+          <Tabs tabs={storeSettings.tabs} activeTab={activeTab} onChange={setActiveTab} />
+
+          {category ? (
+            <ProductGrid
+              products={visibleProducts}
+              cart={cart}
+              onAdd={add}
+              onRemove={remove}
+            />
+          ) : (
+            <div className="px-6 py-8 text-sm text-taupe lg:px-12">
+              Conteúdo desta seção em breve.
+            </div>
+          )}
         </div>
-      )}
+
+        <OrderSidebar
+          cart={cart}
+          total={total}
+          onSetQty={setQty}
+          onReview={() => setCheckoutOpen(true)}
+        />
+      </div>
 
       <CartBar cart={cart} total={total} onReview={() => setCheckoutOpen(true)} />
 
