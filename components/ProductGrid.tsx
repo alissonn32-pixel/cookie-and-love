@@ -14,14 +14,14 @@ export function ProductGrid({
 }) {
   if (products.length === 0) {
     return (
-      <p className="px-6 py-8 text-sm text-taupe">
+      <p className="px-6 py-8 text-sm text-taupe lg:px-12">
         Nenhum produto disponível nesta categoria no momento.
       </p>
     );
   }
 
   return (
-    <div className="px-6 py-5 grid grid-cols-2 gap-3.5">
+    <div className="px-6 py-5 grid grid-cols-2 gap-3.5 lg:grid-cols-4 lg:gap-5 lg:px-12">
       {products.map((product) => {
         const cartItem = cart.find((item) => item.productId === product.id);
         return (
