@@ -11,12 +11,19 @@ export function Tabs({
   activeTab: string;
   onChange: (tabId: string) => void;
 }) {
+  const handleClick = (tabId: string) => {
+    onChange(tabId);
+    document
+      .getElementById(tabId)
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   return (
-    <div className="flex gap-6 px-6 mt-5 border-b border-beige overflow-x-auto lg:px-12">
+    <div className="flex gap-6 px-6 mt-5 border-b border-beige overflow-x-auto lg:px-12 sticky top-0 z-10 bg-cream">
       {tabs.map((tab) => (
         <button
           key={tab.id}
-          onClick={() => onChange(tab.id)}
+          onClick={() => handleClick(tab.id)}
           className={`pb-2.5 text-[11px] tracking-[0.1em] uppercase whitespace-nowrap ${
             activeTab === tab.id
               ? "text-brown border-b-2 border-caramel"
