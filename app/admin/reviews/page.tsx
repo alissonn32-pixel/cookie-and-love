@@ -39,7 +39,7 @@ export default async function AdminReviewsPage() {
   const approved = reviews.filter((review) => review.approved);
 
   return (
-    <main className="max-w-2xl mx-auto p-6">
+    <main className="max-w-2xl mx-auto p-6 lg:max-w-4xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-display font-bold text-xl">Avaliações</h1>
       </div>

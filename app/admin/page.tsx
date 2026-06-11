@@ -9,7 +9,7 @@ export default async function AdminDashboard() {
   } = await supabase.auth.getUser();
 
   return (
-    <main className="max-w-md mx-auto p-6">
+    <main className="max-w-md mx-auto p-6 lg:max-w-lg">
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-display font-bold text-xl">Painel administrativo</h1>
         <LogoutButton />

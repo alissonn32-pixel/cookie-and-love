@@ -8,7 +8,7 @@ export default async function AdminProductsPage() {
   const products = await getAllProducts(client);
 
   return (
-    <main className="max-w-2xl mx-auto p-6">
+    <main className="max-w-2xl mx-auto p-6 lg:max-w-4xl">
       <div className="flex justify-between items-center mb-6">
         <h1 className="font-display font-bold text-xl">Produtos</h1>
         <Link href="/admin/products/new" className="text-xs underline text-taupe">
