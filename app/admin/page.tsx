@@ -25,6 +25,9 @@ export default async function AdminDashboard() {
         <Link href="/admin/reviews" className="block text-sm underline text-brown">
           Gerenciar avaliações
         </Link>
+        <Link href="/admin/settings" className="block text-sm underline text-brown">
+          Configurações da loja
+        </Link>
       </nav>
     </main>
   );
