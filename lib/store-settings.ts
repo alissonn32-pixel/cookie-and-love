@@ -38,3 +38,21 @@ export async function getStoreSettings(client: SupabaseClient): Promise<StoreSet
 
   return mapRow(data as StoreSettingsRow);
 }
+
+export async function updateStoreSettings(
+  client: SupabaseClient,
+  settings: { isOpen: boolean; prepTimeMinutes: number; minOrderValue: number }
+): Promise<void> {
+  const { error } = await client
+    .from("store_settings")
+    .update({
+      is_open: settings.isOpen,
+      prep_time_minutes: settings.prepTimeMinutes,
+      min_order_value: settings.minOrderValue,
+    })
+    .eq("id", 1);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+}
