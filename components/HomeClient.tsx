@@ -30,11 +30,6 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const { cart, total, add, remove, setQty } = useCart();
 
-  const category = TAB_TO_CATEGORY[activeTab];
-  const visibleProducts = products.filter(
-    (product) => product.active && product.category === category
-  );
-
   return (
     <main className="max-w-md mx-auto pb-4 lg:max-w-6xl lg:pb-8">
       <div className="deli-stripe" />
@@ -47,18 +42,31 @@ export function HomeClient({ products, storeSettings }: HomeClientProps) {
           <Hero text={storeSettings.heroText} />
           <Tabs tabs={storeSettings.tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-          {category ? (
-            <ProductGrid
-              products={visibleProducts}
-              cart={cart}
-              onAdd={add}
-              onRemove={remove}
-            />
-          ) : (
-            <div className="px-6 py-8 text-sm text-taupe lg:px-12">
-              Conteúdo desta seção em breve.
-            </div>
-          )}
+          {storeSettings.tabs.map((tab) => {
+            const category = TAB_TO_CATEGORY[tab.id];
+            return (
+              <section key={tab.id} id={tab.id} className="scroll-mt-16">
+                <h2 className="font-display font-bold text-lg px-6 pt-6 lg:px-12">
+                  {tab.label}
+                </h2>
+
+                {category ? (
+                  <ProductGrid
+                    products={products.filter(
+                      (product) => product.active && product.category === category
+                    )}
+                    cart={cart}
+                    onAdd={add}
+                    onRemove={remove}
+                  />
+                ) : (
+                  <div className="px-6 py-8 text-sm text-taupe lg:px-12">
+                    Conteúdo desta seção em breve.
+                  </div>
+                )}
+              </section>
+            );
+          })}
         </div>
 
         <OrderSidebar
